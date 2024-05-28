@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar View</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js'></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+
+<style>
+* {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Karla", sans-serif;
+    background-color: #f2f8f3;
+    margin: 0;
+    padding: 0;
+    touch-action: manipulation;
+  }
+  
+
+  #calendar {
+    margin: 20px auto;
+    padding: 0 10px;
+  }
+
+  /* Calendar current day grid*/
+  .fc-scroller-harness {
+    background-color: white;
+  }
+
+  /* Calendar months header grid*/
+  .fc-col-header-cell {
+    background-color: #016b83 !important;
+    color: white !important;
+  }
+
+  /* Calendar day grid*/
+  .fc-day {
+    background-color: #f2f8f3;
+  }
+
+  .switch-view {
+      text-align: right;
+      margin-top: 5px;
+      padding: 10px;
+    }
+
+  .switch-view a {
+    color: white;
+    text-decoration: none;
+  }
+
+  .top-buttons {
+    display: flex;
+    background-color: #091723;
+    padding: 10px 0;
+  }
+
+  .top-buttons > div {
+    width: 50%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #toggleAdvancedFilter {
+    background-color: #016b83;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 10px !important;
+    margin-left: 10px;
+    font-family: inherit;
+    font-weight: 400;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: #091723;
+    padding: 0 10px;
+  }
+
+  .filter > div {
+    width: 70%;
+    box-sizing: border-box;
+    margin: auto;
+  }
+
+  .filter label {
+    color: white;
+    font-weight: 600;
+    font-size: 20px;
+    margin: 5px 0;
+    float: left;
+    font-family: inherit;
+  }
+
+  .filter select, .filter #date {
+    margin-right: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    background-color: white;
+    border-radius: 0;
+    border: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font-family: inherit;
+  }
+
+  .filter select:hover {
+    cursor: pointer;
+  }
+
+  .filter .advanced-filter {
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+
+  .filter-buttons {
+    display: flex;
+    width: 100%;
+    background-color: #091723;
+    font-family: inherit;
+  }
+
+  .filter-buttons > div {
+    flex-direction: column;
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .filter button:hover {
+    background-color: rgb(0, 0, 208);
+  }
+
+  #resetButton {
+    background-color: #ccc;
+    color: black;
+    margin: 20px 0;
+    font-family: inherit;
+    font-size: 16px;
+    padding: 5px;
+    border: solid 2px #aaa;
+    border-radius: 5px;
+    float: right;
+    cursor: pointer;
+  }
+
+  .advanced-filter {
+    display: none;
+  }
+
+  input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+  -webkit-appearance: none;
+}
+
+input[type="text"],
+input[type="date"],
+select {
+  padding: 10px;
+  font-size: 16px;
+  color: black;
+}
+
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-block;
+  position: relative;
+  font-family: inherit;
+  font-size: 16px;
+  color: #333;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+input[type="date"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.popup {
+  display: block;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 1);
+  z-index: 10;
+  padding-top: 100px;
+}
+
+.popup-content {
+  border: 5px dashed #016b8354 !important;
+  background-color: white;
+  margin: auto;
+  padding: 20px; 
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+  line-height: 1.4rem;
+  max-height: 80vh; /* Add this line to limit the maximum height */
+  overflow-y: auto; /* Add this line to enable vertical scrolling */
+}
+
+.popup-content h2 {
+        font-weight: 800;
+        font-size: 30px;
+        line-height: 1.8rem;
+        overflow: wrap;
+        white-space: wrap;
+        text-overflow: none;
+        padding-bottom: 20px;
+      }
+.popup-host-name {
+      color: gray;
+      font-weight: 200 !important;
+  }
+
+  .event-name {
+    color: black;
+    font-weight: 400;
+  }
+
+  .event-heading {
+    color: black;
+    font-weight: 400 !important;
+  }
+
+.close {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 30px;
+      font-weight: bold;
+      cursor: pointer;
+  }
+
+  .popup {
+    font-weight: 600;
+  }
+
+  .popup-strong {
+    color: gray;
+    font-weight: 400;
+  }
+
+  .popup p {
+    font-weight: 400;
+  }
+
+  .fc-event {
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .event-tile {
+    padding: 3px 6px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .fc-h-event {
+    background-color: rgba(0, 0, 255, 0.2);
+    background: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .fc-event-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 5px !important;
+}
+
+  .fc-button {
+    background-color: white !important;
+    border: solid 1px #ccc !important;
+    color: black !important;
+  }
+
+  .get-tickets {
+      background-color: #ff4f40; /* Blue color for Get Tickets button */
+      color: white;
+      float: left;
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+  }
+  .get-tickets:hover {
+    background-color: #ff3b29;
+  }
+
+  @media (max-width: 700px) {
+        /* Media query for screen width less than 1000px */
+        .filter {
+          padding: 0 10px;
+        }
+
+        .filter > div {
+          width: 100%;
+        }
+
+        .filter label {
+          padding-top: 10px;
+        }
+
+        #resetButton {
+          padding: 5px;
+          border-radius: 5px;
+          margin: 20px 0;
+          float: right;
+        }
+
+        #calendar {
+            width: 100%;
+            height: 90vh; /* 90% of the viewport height */
+            margin-top: 20px;
+        }
+        .fc {
+            height: auto;
+            width: auto;
+        }
+        .fc-toolbar-title {
+          font-size: 22px !important;
+        }
+        .event-tile {
+          padding: 3px;
+          margin-bottom: 2px;
+          border-radius: 3px;
+        }
+        .get-tickets {
+          width: 95%;
+          text-align: center;
+        }
+  }
+
+</style>
+</head>
+<body>
+  <div class="top-buttons">
+    <div class="filter-buttons">
+      <div>
+        <button id="toggleAdvancedFilter">Show Filters +</button>
+      </div>
+    </div>
+    <div class="switch-view">
+      <a href="cards-view.html">Card View&nbsp;<i class="fa fa-external-link"></i></a>
+  </div>
+  </div>
+    <div class="filter">
+      <div>
+        <div class="filter advanced-filter">
+            <div>
+                <label for="category">Category:</label>
+                <select id="category">
+                  <option value="all">All</option>
+                  <option value="Club">Club</option>
+                  <option value="Private">Private Party</option>
+                  <option value="House Party">House Party</option>
+                  <option value="Kink">Kink</option>
+                  <option value="BDSM">BDSM</option>
+                  <option value="Fetish">Fetish</option>
+                  <option value="Queer">Queer specific</option>
+                  <option value="Social">Social</option>
+                  <option value="Workshop">Workshop</option>
+                </select>
+              </div>
+            <div>
+                <label for="city">City:</label>
+                <select id="city">
+                  <option value="all">All</option>
+                  <option value="Online">Virtual & Online</option>
+                  <option value="Brighton">Brighton</option>
+                  <option value="Berkshire">Berkshire</option>
+                  <option value="Liverpool">Liverpool</option>
+                  <option value="London">London</option>
+                  <option value="Manchester">Manchester</option>
+                </select>
+              </div>
+          <div>
+            <label for="host">Hosted by:</label>
+            <select id="host">
+              <option value="all">All</option>
+              <option value="7sins">7sins</option>
+              <option value="Anatomie Studio London">Anatomie Studio London</option>
+              <option value="Dominium Vita">Dominium Vita</option>
+              <option value="Feeld">Feeld</option>
+              <option value="Fox & Badge">Fox & Badge</option>
+              <option value="Heavens Circle">Heaven's Circle</option>
+              <option value="Joyride">Joyride</option>
+              <option value="Klub Verboten">Klub Verboten</option>
+              <option value="Killing Kittens">Killing Kittens</option>
+              <option value="La Boutique Bazaar">La Boutique Bazaar</option>
+              <option value="Le Boudior">Le Boudior</option>
+              <option value="Torture Garden">Torture Garden</option>
+              <option value="Polyglam">Polyglam</option>
+              <option value="Quench">Quench</option>
+              <option value="Riot">RIOT</option>
+              <option value="Rocket Project">Rocket Project</option>
+              <option value="The Tribe">Tribe</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="perfect_for">Venue</label>
+            <select id="perfect_for">
+              <option value="all">All</option>
+              <option value="Club">Club</option>
+              <option value="Club and Dungeon">Club & Dungeon</option>
+              <option value="Club and Dungeon">Club & Playroom</option>
+              <option value="Club and Dungeon and Playroom">Club & Dungeon & Playroom</option>
+              <option value="Dungeon">Dungeon</option>
+              <option value="Dungeon and Playroom">Dungeon & Playroom</option>
+              <option value="House">House</option>
+              <option value="Spa">Spa</option>
+            </select>
+          </div>
+          <div>
+            <label for="date">Date:</label>
+            <input type="date" id="date">
+          </div>
+          <div style="text-align: center;">
+            <button id="resetButton">Reset All</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div id="calendar"></div>
+
+    <!-- Your HTML body content -->
+    <script>
+      document.addEventListener('DOMContentLoaded', async function() {
+        const calendarEl = document.getElementById('calendar');
+        const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vScets2UoJCsuJFST-6DfRczo9791ofvlOJv2zsPFCDedtQQs6yo9mZ8hLc6YLkoEJJQNc6G1pCuCky/pub?output=csv'; // Replace with your actual URL
+
+        async function getEventsFromSheet() {
+          const response = await fetch(googleSheetUrl);
+          const data = await response.text();
+          const rows = data.split('\n').map(row => row.split(','));
+          rows.shift(); // Remove header row
+
+          // Adjust date format and ensure proper event structure
+          return rows.map(row => ({
+            title: row[1],
+            start: row[2].split('/').reverse().join('-'),
+            location: row[3],
+            host: row[4],
+            category: row[5],
+            description: row[6],
+            perfectFor: row[7],
+            ticketsLink: row[8],
+          }));
+        }
+
+        let events = await getEventsFromSheet();
+        console.log('Fetched events:', events); // Debugging line to check events
+
+        const categoryColors = {
+          Club: 'darkblue',
+          Private: 'darkred',
+          House: 'darkgreen',
+          Kink: 'black',
+          BDSM: 'darkslategray',
+          Fetish: 'darkmagenta',
+          Queer: 'darkorange',
+          Social: 'coral',
+          Workshop: 'darkviolet'
+        };
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          events: events,
+          eventContent: function(arg) {
+            let category = arg.event.extendedProps.category;
+            let backgroundColor = categoryColors[category] || 'rgb(49, 57, 251)';
+            return {
+              html: `<div class="event-tile" style="background-color: ${backgroundColor};">
+                      ${arg.event.title}
+                     </div>`
+            };
+          },
+          eventClick: function(info) {
+            const event = info.event.extendedProps;
+            const popup = document.createElement('div');
+            popup.innerHTML = `
+              <div class="popup">
+                <div class="popup-content">
+                  <span class="close">&times;</span>
+                  <h2>${info.event.title}</h2>
+                  <p class="popup-host-name"><strong>Hosted by:</strong> <strong class="event-name">${event.host}</strong></p>
+                  <p class="popup-host-name"><strong>Date:</strong> <strong class="event-heading">${info.event.start.toISOString().split('T')[0]}</strong></p>
+                  <p class="popup-host-name"><strong>Location:</strong> <strong class="event-heading">${event.location}</strong></p>
+                  <p class="popup-host-name"><strong>Type:</strong> <strong class="event-heading">${event.category}</strong></p>
+                  <p class="popup-host-name"><strong>Venue:</strong> <strong class="event-heading">${event.perfectFor}</strong></p>
+                  <p class="popup-host-name"><strong>Description:</strong></p>
+                  <p class="popup-host-name"><strong class="event-heading">${event.description}</strong></p>
+                  <a href="${event.ticketsLink}" class="get-tickets" target="_blank">Get Tickets</a>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(popup);
+
+            const closeBtn = popup.querySelector('.close');
+            closeBtn.addEventListener('click', function() {
+              document.body.removeChild(popup);
+            });
+          },
+        });
+
+        calendar.render();
+
+        // Filter logic
+        const dateInput = document.getElementById('date');
+        const cityInput = document.getElementById('city');
+        const categoryInput = document.getElementById('category');
+        const hostInput = document.getElementById('host');
+        const perfectForInput = document.getElementById('perfect_for');
+        const toggleAdvancedFilterButton = document.getElementById('toggleAdvancedFilter');
+        const resetButton = document.getElementById('resetButton');
+        const advancedFilterDiv = document.querySelector('.advanced-filter');
+
+        function filterEvents() {
+          const filteredEvents = events.filter(event => {
+            const eventDate = event.start.split('T')[0];
+            const dateFilter = !dateInput.value || eventDate === dateInput.value;
+            const cityFilter = cityInput.value === 'all' || event.location === cityInput.value;
+            const categoryFilter = categoryInput.value === 'all' || event.category === categoryInput.value;
+            const hostFilter = hostInput.value === 'all' || event.host === hostInput.value;
+            const perfectForFilter = perfectForInput.value === 'all' || event.perfectFor === perfectForInput.value;
+            return dateFilter && cityFilter && categoryFilter && hostFilter && perfectForFilter;
+          });
+          calendar.removeAllEvents();
+          calendar.addEventSource(filteredEvents);
+        }
+
+        dateInput.addEventListener('change', filterEvents);
+        cityInput.addEventListener('change', filterEvents);
+        categoryInput.addEventListener('change', filterEvents);
+        hostInput.addEventListener('change', filterEvents);
+        perfectForInput.addEventListener('change', filterEvents);
+
+        toggleAdvancedFilterButton.addEventListener('click', function() {
+          if (advancedFilterDiv.style.display === 'none') {
+            advancedFilterDiv.style.display = 'block';
+            toggleAdvancedFilterButton.textContent = 'Hide Filters -';
+          } else {
+            advancedFilterDiv.style.display = 'none';
+            toggleAdvancedFilterButton.textContent = 'Show Filters +';
+          }
+        });
+
+        resetButton.addEventListener('click', function() {
+          dateInput.value = '';
+          cityInput.value = 'all';
+          categoryInput.value = 'all';
+          hostInput.value = 'all';
+          perfectForInput.value = 'all';
+          filterEvents();
+        });
+
+        // Initialize the calendar with filtered events
+        filterEvents();
+
+        function adjustCalendarHeight() {
+          if (window.innerWidth = 600) {
+            calendar.setOption('height', 'auto');
+          } else {
+            calendar.setOption('height', 'parent');
+          }
+        }
+
+        window.addEventListener('resize', adjustCalendarHeight);
+        adjustCalendarHeight();
+      });
+    </script>
+      
+
+</body>
+</html>

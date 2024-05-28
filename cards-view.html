@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<title>Cards View</title>
+<style>
+
+  * {
+    margin: auto;
+    padding: auto;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Karla", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    background-color: #016b83;
+    overflow-x: hidden;
+    color: black;
+    touch-action: manipulation;
+  }
+
+  .switch-view {
+      text-align: right;
+      margin-top: 5px;
+      padding: 10px;
+    }
+
+  .switch-view a {
+    color: white;
+    text-decoration: none;
+  }
+
+  .top-buttons {
+    display: flex;
+    background-color: #091723;
+    padding: 10px 0;
+  }
+
+  .top-buttons > div {
+    width: 50%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #toggleAdvancedFilter {
+    background-color: #016b83;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 10px !important;
+    float: left !important;
+    margin-left: 10px;
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: #091723;
+    padding: 0 10px;
+  }
+
+  .filter > div {
+    width: 70%;
+    box-sizing: border-box;
+  }
+
+  .filter label {
+    color: white;
+    font-weight: 600;
+    font-size: 20px;
+    margin: 5px 0;
+    float: left;
+    font-family: inherit;
+  }
+
+  .filter select, .filter #date {
+    margin-right: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    background-color: white;
+    border-radius: 0;
+    border: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font-family: inherit;
+    float: left !important;
+  }
+
+  .filter select:hover {
+    cursor: pointer;
+  }
+
+  .filter .advanced-filter {
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+
+  .filter-buttons {
+    display: flex;
+    width: 100%;
+    background-color: #091723;
+    font-family: inherit;
+  }
+
+  .filter-buttons > div {
+    flex-direction: column;
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .filter button:hover {
+    background-color: #007e9b;
+  }
+
+  #resetButton {
+    background-color: #ccc;
+    color: black;
+    margin: 20px 0;
+    font-family: inherit;
+    font-size: 16px;
+    padding: 5px;
+    border: solid 2px #aaa;
+    border-radius: 5px;
+    float: right;
+  }
+
+  .advanced-filter {
+    display: none;
+  }
+
+  input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+  -webkit-appearance: none;
+}
+
+input[type="text"],
+input[type="date"],
+select {
+  padding: 10px;
+  font-size: 16px;
+  color: black;
+}
+
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-block;
+  position: relative;
+  font-family: inherit;
+  font-size: 16px;
+  color: #333;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+input[type="date"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+  /* CSS for event layout */
+  .event {
+      border: 5px dashed #016b8354 !important;
+      border-radius: 10px;
+      background-color: #fff;
+      padding: 20px;
+      padding-bottom: 20px;
+      margin: 10px;
+      width: calc(33.33% - 20px); /* Adjusted width for 3 columns with margin */
+      float: left;
+      box-sizing: border-box;
+      position: relative;
+      line-height: 1.7rem;
+  }
+  .event h2 {
+    font-weight: 800;
+    font-size: 30px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-bottom: 10px;
+  }
+  .event .host-name {
+    color: black;
+    background-color: #bbf6e2;
+    font-weight: 600;
+    padding: 3px 5px;
+    border-radius: 4px;
+    width: fit-content;
+    margin: auto;
+    display: inline;
+  }
+  .event button {
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+      width: 48%; /* 50% width for each button */
+      text-align: center;
+      font-family: "Karla", sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+  }
+  .event .popup-content a {
+    float: left;
+    padding: 10px !important;
+    text-decoration: none;
+    width: 25%;
+    text-align: center;
+  }
+  .event .view-description {
+      background-color: #016b83; /* Blue color for View Description button */
+      color: white;
+      float: left; /* Make it float left */
+  }
+  .event .view-description:hover {
+    background-color: #007e9b;
+  }
+  .event .get-tickets {
+      background-color: #ff4f40; /* Blue color for Get Tickets button */
+      color: white;
+      float: right; /* Make it float right */
+  }
+  .event .get-tickets:hover {
+    background-color: #ff3b29;
+  }
+  .event .popup {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Adjust opacity for better readability */
+    z-index: 1;
+    padding-top: 100px;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.event .popup-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    border: 5px dashed #016b8354;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+    line-height: 1.4rem;
+}
+.event .popup-content h2 {
+    font-weight: 800;
+    font-size: 30px;
+    line-height: 1.8rem;
+    padding-bottom: 20px;
+}
+.event .host-name-popup {
+    color: black;
+    font-weight: 700;
+}
+.event .close {
+    color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.event p.description {
+    padding-bottom: 20px;
+    white-space: pre-wrap; /* Preserve formatting and line breaks */
+}
+  p strong {
+      color: grey;
+      font-weight: 400;
+  }
+  /* Scroll down animation keyframes */
+  @keyframes floatAnimation {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(20px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+  }
+  #filterResult {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 60px;
+    background-color: #bbf6e2;
+    color: black;
+    font-size: large;
+    font-weight: 500;
+    width: fit-content;
+    padding: 3px 6px;
+    border-radius: 5px;
+    animation: floatAnimation 2.5s infinite;
+  }
+  /* Clear float after every third event */
+  .event:nth-child(3n + 1) {
+      clear: left;
+  }
+  @media (max-width: 800px) {
+      /* Media query for screen width less than 1000px */
+      .filter {
+          padding: 0 10px;
+          background-color: #091723;
+        }
+
+        .filter > div {
+          width: 100%;
+        }
+
+        .filter button {
+            width: 100%;
+            margin: 10px 0;
+            background-color: #091723;
+        }
+
+        .filter label {
+          padding-top: 10px;
+        }
+
+        #resetButton {
+          width: auto;
+          padding: 5px;
+          border-radius: 5px;
+          margin: 20px 0;
+          float: right;
+          cursor: pointer;
+        }
+
+      #date {
+        margin-bottom: 10px;
+      }
+
+      /* Media query for events to be 1x1 full width */
+      .event {
+          width: calc(100% - 20px);
+          float: none;
+          margin-bottom: 30px !important;
+      }
+      .event .popup-content {
+        padding: 20px;
+      }
+      .event .popup-content h2 {
+        font-weight: 800;
+        font-size: 30px;
+        line-height: 1.8rem;
+        overflow: wrap;
+        white-space: wrap;
+        text-overflow: none;
+        padding-bottom: 20px;
+      }
+      .event p.description {
+        display: visible;
+        padding-bottom: 20px;
+      }
+      .event .popup-content a {
+        width: 95%;
+        text-align: center;
+      }
+  }
+
+  /* New CSS for advanced filter toggle */
+  .advanced-filter {
+      display: none;
+  }
+  
+</style>
+</head>
+<body>
+<!-- Standard filter fields -->
+<div class="top-buttons">
+  <div class="filter-buttons">
+    <div>
+      <button id="toggleAdvancedFilter">Show Filters +</button>
+    </div>
+  </div>
+  <div class="switch-view">
+    <a href="calendar-view.html">Calendar View&nbsp;<i class="fa fa-external-link"></i></a>
+</div>
+</div>
+  <div class="filter">
+    <div>
+      <div class="filter advanced-filter">
+          <div>
+              <label for="category">Category:</label>
+              <select id="category">
+                <option value="all">All</option>
+                <option value="Club">Club</option>
+                <option value="Private">Private Party</option>
+                <option value="House Party">House Party</option>
+                <option value="Kink">Kink</option>
+                <option value="BDSM">BDSM</option>
+                <option value="Fetish">Fetish</option>
+                <option value="Queer">Queer specific</option>
+                <option value="Social">Social</option>
+                <option value="Workshop">Workshop</option>
+              </select>
+            </div>
+          <div>
+              <label for="city">City:</label>
+              <select id="city">
+                <option value="all">All</option>
+                <option value="Online">Virtual & Online</option>
+                <option value="Brighton">Brighton</option>
+                <option value="Berkshire">Berkshire</option>
+                <option value="Liverpool">Liverpool</option>
+                <option value="London">London</option>
+                <option value="Manchester">Manchester</option>
+              </select>
+            </div>
+        <div>
+          <label for="host">Hosted by:</label>
+          <select id="host">
+            <option value="all">All</option>
+            <option value="7sins">7sins</option>
+            <option value="Anatomie Studio London">Anatomie Studio London</option>
+            <option value="Dominium Vita">Dominium Vita</option>
+            <option value="Feeld">Feeld</option>
+            <option value="Fox & Badge">Fox & Badge</option>
+            <option value="Heavens Circle">Heaven's Circle</option>
+            <option value="Joyride">Joyride</option>
+            <option value="Klub Verboten">Klub Verboten</option>
+            <option value="Killing Kittens">Killing Kittens</option>
+            <option value="La Boutique Bazaar">La Boutique Bazaar</option>
+            <option value="Le Boudior">Le Boudior</option>
+            <option value="Torture Garden">Torture Garden</option>
+            <option value="Polyglam">Polyglam</option>
+            <option value="Quench">Quench</option>
+            <option value="Riot">RIOT</option>
+            <option value="Rocket Project">Rocket Project</option>
+            <option value="The Tribe">Tribe</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="perfect_for">Venue</label>
+          <select id="perfect_for">
+            <option value="all">All</option>
+            <option value="Club">Club</option>
+            <option value="Club and Dungeon">Club & Dungeon</option>
+            <option value="Club and Dungeon">Club & Playroom</option>
+            <option value="Club and Dungeon and Playroom">Club & Dungeon & Playroom</option>
+            <option value="Dungeon">Dungeon</option>
+            <option value="Dungeon and Playroom">Dungeon & Playroom</option>
+            <option value="House">House</option>
+            <option value="Spa">Spa</option>
+          </select>
+        </div>
+        <div>
+          <label for="date">Date:</label>
+          <input type="date" id="date">
+        </div>
+        <div style="text-align: center;">
+          <button id="resetButton">Reset All</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+<div class="filter-result">
+  <p id="filterResult"></p>
+</div>
+
+<div id="events">
+    <!-- Fetch and display events data here from Google Sheets -->
+</div>
+
+<script>
+// Event data (commented out as we'll use data from Google Sheet)
+// Event data fetching and rendering logic (unchanged)
+const eventsContainer = document.getElementById('events');
+const cityFilter = document.getElementById('city');
+const dateFilter = document.getElementById('date');
+const categoryFilter = document.getElementById('category');
+const hostFilter = document.getElementById('host');
+const perfectForFilter = document.getElementById('perfect_for');
+const resetButton = document.getElementById('resetButton');
+const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vScets2UoJCsuJFST-6DfRczo9791ofvlOJv2zsPFCDedtQQs6yo9mZ8hLc6YLkoEJJQNc6G1pCuCky/pub?output=csv'; // Replace with your actual URL
+
+async function getEventsFromSheet() {
+  const response = await fetch(googleSheetUrl);
+  const data = await response.text();
+  const rows = data.split('\n').map(row => row.split(','));
+  rows.shift(); // Remove header row
+  return rows.map(row => ({
+    name: row[1],
+    date: row[2],
+    location: row[3],
+    host: row[4],
+    category: row[5],
+    description: row[6],
+    perfectFor: row[7],
+    ticketsLink: row[8],
+  }));
+}
+
+function getSelectedOptions(selectElement) {
+  return Array.from(selectElement.selectedOptions).map(option => option.value);
+}
+
+function renderEvents(events) {
+  eventsContainer.innerHTML = '';
+  events.forEach(event => {
+    const eventDiv = document.createElement('div');
+    eventDiv.classList.add('event');
+    eventDiv.innerHTML = `
+      <h2>${event.name}</h2>
+      <p class="host-name"><strong></strong> ${event.host}</p>
+      <p><strong>Date:</strong> ${event.date}</p>
+      <p><strong>Location:</strong> ${event.location}</p>
+      <p><strong>Type:</strong> ${event.category}</p>
+      <p><strong>Venue:</strong> ${event.perfectFor}</p>
+      <button class="toggle-description view-description">Details</button>
+      <button class="get-tickets" data-link="${event.ticketsLink}">Get Tickets</button>
+      <br><br>
+      <div class="popup">
+        <div class="popup-content">
+          <span class="close">&times;</span>
+          <br>
+          <h2>${event.name}</h2>
+          <p class="host-name-popup"><strong>Hosted by</strong> ${event.host}</p>
+          <br>
+          <p><strong>Description:</strong></p>
+          <p class="description"></p> <br>
+          <a href="${event.ticketsLink}" class="get-tickets" target="_blank">Get Tickets</a>
+          <br><br><br>
+        </div>
+      </div>
+    `;
+
+    // Update description element with full content using textContent
+    const descriptionElement = eventDiv.querySelector('.description');
+    descriptionElement.textContent = event.description;
+
+    eventsContainer.appendChild(eventDiv);
+  });
+}
+
+
+function toggleDescription(event) {
+  const popup = event.parentElement.querySelector('.popup');
+  popup.style.display = 'block';
+}
+
+function closePopup(event) {
+  const popup = event.target.closest('.popup');
+  popup.style.display = 'none';
+}
+
+function renderFilterResult(filteredEvents) {
+  const filterResult = document.getElementById('filterResult');
+  const numResults = filteredEvents.length;
+  filterResult.textContent = `We found ${numResults} ${numResults === 1 ? 'party 🔽' : 'parties 🔽'}`;
+}
+
+function filterEvents() {
+  getEventsFromSheet()
+    .then(events => {
+      let filteredEvents = events;
+
+      // Apply filters
+      const city = cityFilter.value;
+      const selectedDate = dateFilter.value;
+      const selectedCategories = getSelectedOptions(categoryFilter);
+      const host = hostFilter.value;
+      const selectedPerfectFor = getSelectedOptions(perfectForFilter);
+
+      filteredEvents = filteredEvents.filter(event => {
+        // Convert event date to match the input format
+        const eventDate = event.date.split('/').reverse().join('-');
+        const categories = event.category.split(',').map(cat => cat.trim());
+        const perfectFors = event.perfectFor.split(',').map(perfectFor => perfectFor.trim());
+
+        // Check if each event matches the selected filters
+        const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes('all') || selectedCategories.some(selectedCategory => categories.includes(selectedCategory));
+        const perfectForMatch = selectedPerfectFor.length === 0 || selectedPerfectFor.includes('all') || selectedPerfectFor.some(selected => perfectFors.includes(selected));
+
+        return (city === 'all' || event.location === city) &&
+               (selectedDate === '' || eventDate === selectedDate) &&
+               categoryMatch &&
+               (host === 'all' || event.host === host) &&
+               perfectForMatch;
+      });
+
+      renderEvents(filteredEvents);
+      renderFilterResult(filteredEvents);
+    })
+    .catch(error => {
+      console.error('Error fetching events:', error);
+      // Handle any errors during data fetching
+    });
+}
+
+// Event listeners for filter fields
+cityFilter.addEventListener('change', filterEvents);
+dateFilter.addEventListener('change', filterEvents);
+categoryFilter.addEventListener('change', filterEvents);
+hostFilter.addEventListener('change', filterEvents);
+perfectForFilter.addEventListener('change', filterEvents);
+
+// Event listener for reset button
+resetButton.addEventListener('click', () => {
+  // Reset all filter fields
+  cityFilter.value = 'all';
+  dateFilter.value = '';
+  categoryFilter.value = 'all';
+  hostFilter.value = 'all';
+  perfectForFilter.value = 'all';
+
+  filterEvents();
+});
+
+// Add event listener to the toggle button
+const toggleButton = document.getElementById('toggleAdvancedFilter');
+const advancedFilter = document.querySelector('.advanced-filter');
+
+toggleButton.addEventListener('click', function() {
+  if (advancedFilter.style.display === 'none') {
+    advancedFilter.style.display = 'block';
+    toggleButton.textContent = 'Hide Filters -';
+  } else {
+    advancedFilter.style.display = 'none';
+    toggleButton.textContent = 'Show Filters +';
+  }
+});
+
+// Toggle description event listener
+eventsContainer.addEventListener('click', function(event) {
+  if (event.target.classList.contains('toggle-description')) {
+    toggleDescription(event.target);
+  }
+  if (event.target.classList.contains('close')) {
+    closePopup(event);
+  }
+});
+
+// Event delegation for dynamically added elements
+eventsContainer.addEventListener('click', function(event) {
+  if (event.target.classList.contains('toggle-description')) {
+    toggleDescription(event.target);
+  } else if (event.target.classList.contains('close')) {
+    closePopup(event);
+  } else if (event.target.classList.contains('get-tickets')) {
+    const link = event.target.getAttribute('data-link');
+    if (link) {
+      window.open(link, '_blank');
+    }
+  }
+});
+
+// Initial call to get events and render them (assuming the sheet is already published)
+filterEvents();
+
+</script>
+
+
+</body>
+</html>
